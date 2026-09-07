@@ -53,33 +53,78 @@ def dibujar_automata(
     Función general para dibujar un AFN o AFD.
     """
     estados = sorted(estados)
-    cantidad = len(estados)
+
+    # Se calculan niveles desde el estado inicial. Esto coloca el
+    # inicio a la izquierda y el final a la derecha. En una unión,
+    # las dos alternativas quedan como dos ramas paralelas, igual
+    # que en la construcción de Thompson.
+    niveles = {inicial: 0}
+    pendientes = [inicial]
+
+    while pendientes:
+        origen = pendientes.pop(0)
+
+        if es_afn:
+            salidas = transiciones.get(origen, [])
+            destinos = [destino for simbolo, destino in salidas]
+        else:
+            salidas = transiciones.get(origen, {})
+            destinos = list(salidas.values())
+
+        for destino in destinos:
+            if destino not in niveles:
+                niveles[destino] = niveles[origen] + 1
+                pendientes.append(destino)
+
+    # Normalmente todos son alcanzables. Esta parte evita errores
+    # si se recibe manualmente un autómata con estados aislados.
+    ultimo_nivel = max(niveles.values())
+
+    for estado in estados:
+        if estado not in niveles:
+            ultimo_nivel += 1
+            niveles[estado] = ultimo_nivel
+
+    estados_por_nivel = {}
+
+    for estado in estados:
+        nivel = niveles[estado]
+
+        if nivel not in estados_por_nivel:
+            estados_por_nivel[nivel] = []
+
+        estados_por_nivel[nivel].append(estado)
+
+    maximo_vertical = max(
+        len(grupo)
+        for grupo in estados_por_nivel.values()
+    )
 
     figura, eje = plt.subplots(
-        figsize=(10, 8)
+        figsize=(
+            max(9, (ultimo_nivel + 1) * 1.7),
+            max(4.5, maximo_vertical * 2.0)
+        )
     )
 
     eje.set_aspect('equal')
     eje.axis('off')
 
-    # Los estados se colocan alrededor de una circunferencia.
-    radio_grafo = max(
-        2.3,
-        cantidad * 0.32
-    )
-
     posiciones = {}
 
-    for indice, estado in enumerate(estados):
-        angulo = (
-            math.pi
-            - (2 * math.pi * indice / cantidad)
-        )
+    for nivel in sorted(estados_por_nivel):
+        grupo = sorted(estados_por_nivel[nivel])
 
-        posiciones[estado] = (
-            radio_grafo * math.cos(angulo),
-            radio_grafo * math.sin(angulo)
-        )
+        for indice, estado in enumerate(grupo):
+            y = (
+                (len(grupo) - 1) / 2
+                - indice
+            ) * 1.8
+
+            posiciones[estado] = (
+                nivel * 1.8,
+                y
+            )
 
     radio_estado = 0.34
 
@@ -120,7 +165,7 @@ def dibujar_automata(
     x_inicial, y_inicial = posiciones[inicial]
 
     inicio_flecha = (
-        x_inicial - 1.2,
+        x_inicial - 1.0,
         y_inicial
     )
 
@@ -211,10 +256,11 @@ def dibujar_automata(
             origen
         ) in transiciones_agrupadas
 
-        if existe_inversa and origen < destino:
-            curvatura = 0.18
-        elif existe_inversa:
-            curvatura = -0.18
+        if existe_inversa:
+            # Se usa el mismo signo en ambas direcciones porque al
+            # invertir origen y destino también se invierte la curva.
+            # Así las dos flechas quedan en lados distintos.
+            curvatura = 0.22
         else:
             curvatura = 0
 
@@ -260,10 +306,18 @@ def dibujar_automata(
             }
         )
 
-    margen = radio_grafo + 1.8
+    valores_x = [posicion[0] for posicion in posiciones.values()]
+    valores_y = [posicion[1] for posicion in posiciones.values()]
 
-    eje.set_xlim(-margen, margen)
-    eje.set_ylim(-margen, margen)
+    eje.set_xlim(
+        min(valores_x) - 1.35,
+        max(valores_x) + 1.0
+    )
+
+    eje.set_ylim(
+        min(valores_y) - 1.15,
+        max(valores_y) + 1.15
+    )
 
     eje.set_title(
         titulo,

@@ -6,6 +6,7 @@ from afd import subconjuntos
 from minimizacion import minimizar_afd
 from simulacion import simular_afn, simular_afd
 from graficas import graficar_afn, graficar_afd
+from tablas import crear_reporte_tablas
 
 
 def procesar_expresion(expresion, cadena, numero=1):
@@ -19,6 +20,11 @@ def procesar_expresion(expresion, cadena, numero=1):
     afn = thompson(posfija)
 
     afd = subconjuntos(afn)
+
+    reporte_tablas = crear_reporte_tablas(
+        afn,
+        afd
+    )
 
     afd_minimo = minimizar_afd(afd)
 
@@ -41,6 +47,18 @@ def procesar_expresion(expresion, cadena, numero=1):
     carpeta = (
         Path('resultados')
         / f'expresion_{numero}'
+    )
+
+    carpeta.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    ruta_tablas = carpeta / 'tablas.txt'
+
+    ruta_tablas.write_text(
+        reporte_tablas,
+        encoding='utf-8'
     )
 
     graficar_afn(
@@ -97,6 +115,9 @@ def procesar_expresion(expresion, cadena, numero=1):
         len(afd_minimo['transiciones'])
     )
 
+    print()
+    print(reporte_tablas)
+
     print(
         "AFN:",
         "sí" if resultado_afn else "no"
@@ -115,6 +136,11 @@ def procesar_expresion(expresion, cadena, numero=1):
     print(
         "Imágenes guardadas en:",
         carpeta
+    )
+
+    print(
+        "Tablas guardadas en:",
+        ruta_tablas
     )
 
     # Los tres autómatas deben aceptar y rechazar
