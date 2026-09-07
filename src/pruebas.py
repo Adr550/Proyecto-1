@@ -3,6 +3,7 @@ from afn import thompson
 from afd import subconjuntos
 from minimizacion import minimizar_afd
 from simulacion import simular_afn, simular_afd
+from tablas import crear_reporte_tablas
 
 
 def probar(expresion, casos):
@@ -10,6 +11,12 @@ def probar(expresion, casos):
     afn = thompson(posfija)
     afd = subconjuntos(afn)
     afd_minimo = minimizar_afd(afd)
+
+    reporte = crear_reporte_tablas(afn, afd)
+
+    assert 'Estado AFN' in reporte
+    assert 'Estado AFD' in reporte
+    assert 'ε' in reporte
 
     for cadena, esperado in casos:
         resultado_afn = simular_afn(

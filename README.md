@@ -13,6 +13,7 @@ El programa convierte una expresión regular de notación infix a postfix, const
 - Minimización del AFD.
 - Simulación del AFN, AFD y AFD mínimo.
 - Generación de imágenes PNG.
+- Tablas de transición del AFN-ε y del AFD por subconjuntos.
 - Lectura de expresiones desde un archivo de texto.
 - Validación de expresiones regulares.
 
@@ -34,3 +35,14 @@ Por ejemplo:
 
 ```text
 abb
+```
+
+## Tablas generadas
+
+Para cada expresión se crea un archivo `tablas.txt` dentro de su
+carpeta de resultados. Primero aparece la tabla del AFN con una
+columna para cada símbolo y otra para `ε`. Después aparece la tabla
+del AFD con las columnas `Estado AFD`, `Estado AFN` y las transiciones.
+
+Cada fila del AFD representa un subconjunto de estados del AFN,
+obtenido al aplicar `cerradura-ε(mover(conjunto, símbolo))`.
