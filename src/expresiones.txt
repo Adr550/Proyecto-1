@@ -1,0 +1,4 @@
+# Formato: expresion;cadena
+(b|b)*abb(a|b)*;babbaaaa
+a*;
+ab+c?;abbc
