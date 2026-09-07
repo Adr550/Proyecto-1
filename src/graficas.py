@@ -189,6 +189,10 @@ def dibujar_automata(
         es_afn
     )
 
+    # Recuerda las posiciones ya usadas por etiquetas para evitar que
+    # varias transiciones escriban sus símbolos unas sobre otras.
+    etiquetas_por_zona = {}
+
     for clave, simbolos in transiciones_agrupadas.items():
         origen, destino = clave
 
@@ -220,10 +224,17 @@ def dibujar_automata(
 
             eje.text(
                 x1,
-                y1 + 0.85,
+                y1 + 0.88,
                 etiqueta,
                 horizontalalignment='center',
-                fontsize=9
+                fontsize=9,
+                zorder=5,
+                bbox={
+                    'facecolor': 'white',
+                    'edgecolor': 'none',
+                    'alpha': 0.9,
+                    'pad': 1.5
+                }
             )
 
             continue
@@ -255,14 +266,22 @@ def dibujar_automata(
             destino,
             origen
         ) in transiciones_agrupadas
+        diferencia_niveles = abs(
+            niveles[destino] - niveles[origen]
+        )
 
         if existe_inversa:
             # Se usa el mismo signo en ambas direcciones porque al
             # invertir origen y destino también se invierte la curva.
             # Así las dos flechas quedan en lados distintos.
             curvatura = 0.22
+        elif diferencia_niveles:
+            # Las aristas que saltan más de un nivel se curvan para no
+            # atravesar estados intermedios ni sus nombres.
+            curvatura = 0.13 if diferencia_niveles > 1 else 0
         else:
-            curvatura = 0
+            # Separa transiciones entre estados del mismo nivel.
+            curvatura = 0.18 if y1 <= y2 else -0.18
 
         flecha = FancyArrowPatch(
             inicio,
@@ -278,6 +297,10 @@ def dibujar_automata(
         medio_x = (x1 + x2) / 2
         medio_y = (y1 + y2) / 2
 
+        zona = (round(medio_x, 1), round(medio_y, 1))
+        repeticion = etiquetas_por_zona.get(zona, 0)
+        etiquetas_por_zona[zona] = repeticion + 1
+
         perpendicular_x = (
             -direccion_y
             * curvatura
@@ -292,17 +315,23 @@ def dibujar_automata(
             * 0.45
         )
 
+        separacion_extra = (repeticion // 2 + repeticion % 2) * 0.18
+        if repeticion % 2 == 0:
+            separacion_extra *= -1
+
         eje.text(
             medio_x + perpendicular_x,
-            medio_y + perpendicular_y,
+            medio_y + perpendicular_y + separacion_extra,
             etiqueta,
             horizontalalignment='center',
             verticalalignment='center',
             fontsize=9,
+            zorder=5,
             bbox={
                 'facecolor': 'white',
                 'edgecolor': 'none',
-                'pad': 1
+                'alpha': 0.9,
+                'pad': 1.5
             }
         )
 

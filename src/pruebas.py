@@ -118,6 +118,17 @@ probar(
 )
 
 
+probar(
+    '#|ab',
+    [
+        ('', True),
+        ('ab', True),
+        ('#', True),
+        ('a', False),
+    ]
+)
+
+
 expresiones_invalidas = [
     '',
     '(a|b',

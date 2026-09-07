@@ -1,0 +1,29 @@
+TABLA DE TRANSICIONES DEL AFN-ε
+-> estado inicial, * estado de aceptación
+
++------------+------+------+------+----------+
+| Estado AFN | a    | b    | c    | ε        |
++------------+------+------+------+----------+
+| ->q0       | {q1} | ∅    | ∅    | ∅        |
+| q1         | ∅    | ∅    | ∅    | {q6}     |
+| q2         | ∅    | {q3} | ∅    | ∅        |
+| q3         | ∅    | ∅    | ∅    | {q7}     |
+| q4         | ∅    | ∅    | {q5} | ∅        |
+| q5         | ∅    | ∅    | ∅    | {q7}     |
+| q6         | ∅    | ∅    | ∅    | {q2, q4} |
+| *q7        | ∅    | ∅    | ∅    | ∅        |
++------------+------+------+------+----------+
+
+TABLA DE CONSTRUCCIÓN DEL AFD POR SUBCONJUNTOS
+Cada Estado AFD representa el conjunto de la columna Estado AFN.
+-> estado inicial, * estado de aceptación
+
++------------+------------------+----+----+----+
+| Estado AFD | Estado AFN       | a  | b  | c  |
++------------+------------------+----+----+----+
+| ->D0       | {q0}             | D1 | D2 | D2 |
+| D1         | {q1, q2, q4, q6} | D2 | D3 | D4 |
+| D2         | ∅                | D2 | D2 | D2 |
+| *D3        | {q3, q7}         | D2 | D2 | D2 |
+| *D4        | {q5, q7}         | D2 | D2 | D2 |
++------------+------------------+----+----+----+

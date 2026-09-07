@@ -13,6 +13,11 @@ def procesar_expresion(expresion, cadena, numero=1):
     """
     Ejecuta todo el proceso para una expresión y una cadena.
     """
+    # '#' es una forma fácil de ingresar epsilon, tanto en la
+    # expresión regular como en la cadena que se desea verificar.
+    if cadena.strip() == '#':
+        cadena = ''
+
     expresion_con_puntos = puntos(expresion)
 
     posfija = convertir_a_posfija(expresion)
@@ -56,8 +61,22 @@ def procesar_expresion(expresion, cadena, numero=1):
 
     ruta_tablas = carpeta / 'tablas.txt'
 
+    cadena_mostrada = cadena if cadena else 'ε (cadena vacía)'
+    respuesta = "SÍ pertenece" if resultado_afn else "NO pertenece"
+    decision = 'aceptan' if resultado_afn else 'rechazan'
+    verificacion = (
+        '\n\nVERIFICACIÓN DE PERTENENCIA\n'
+        f'r = {expresion}\n'
+        f'w = {cadena_mostrada}\n'
+        f'AFN: {"acepta" if resultado_afn else "rechaza"}\n'
+        f'AFD: {"acepta" if resultado_afd else "rechaza"}\n'
+        f'AFD mínimo: {"acepta" if resultado_minimo else "rechaza"}\n'
+        f'Respuesta: w {respuesta} a L(r). El AFN y el AFD '
+        f'{decision} la cadena.\n'
+    )
+
     ruta_tablas.write_text(
-        reporte_tablas,
+        reporte_tablas + verificacion,
         encoding='utf-8'
     )
 
@@ -134,6 +153,12 @@ def procesar_expresion(expresion, cadena, numero=1):
     )
 
     print(
+        f"Respuesta: w {respuesta} a L(r). "
+        f"El AFN y el AFD {decision} "
+        "la cadena."
+    )
+
+    print(
         "Imágenes guardadas en:",
         carpeta
     )
@@ -185,8 +210,8 @@ def procesar_archivo(ruta):
         ):
             linea = linea.strip()
 
-            # Ignorar líneas vacías y comentarios.
-            if not linea or linea.startswith('#'):
+            # Se usa "//" para comentarios porque "#" representa ε.
+            if not linea or linea.startswith('//'):
                 continue
 
             if ';' in linea:

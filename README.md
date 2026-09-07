@@ -27,9 +27,12 @@ El programa convierte una expresión regular de notación infix a postfix, const
 | `+` | Una o más repeticiones |
 | `?` | Cero o una aparición |
 | `( )` | Agrupación |
-| `ε` | Cadena vacía |
+| `ε` o `#` | Cadena vacía (epsilon) |
 
 La concatenación también puede escribirse implícitamente.
+
+Al solicitar la cadena `w`, puede ingresarse `#` para evaluar la
+cadena vacía. En archivos, los comentarios deben comenzar con `//`.
 
 Por ejemplo:
 
