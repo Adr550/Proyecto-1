@@ -1,6 +1,11 @@
 from afn import EPSILON
 
 
+def normalizar_cadena(cadena):
+    """Interpreta '#' como la cadena vacía en las simulaciones."""
+    return '' if cadena.strip() == '#' else cadena
+
+
 def cerradura_epsilon(estados, afn):
     """
     Encuentra todos los estados alcanzables utilizando solamente
@@ -43,6 +48,8 @@ def simular_afn(afn, cadena):
     """
     Determina si una cadena es aceptada por el AFN.
     """
+    cadena = normalizar_cadena(cadena)
+
     estados_actuales = cerradura_epsilon(
         {afn['inicial']},
         afn
@@ -67,6 +74,7 @@ def simular_afd(afd, cadena):
     """
     Determina si una cadena es aceptada por el AFD.
     """
+    cadena = normalizar_cadena(cadena)
     estado_actual = afd['inicial']
 
     for simbolo in cadena:

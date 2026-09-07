@@ -7,6 +7,11 @@ unarios = {'?', '*', '+'}
 operadores = {'|', '.', '?', '*', '+'}
 
 
+def normalizar_epsilon(expresion):
+    """Permite escribir epsilon como '#' o como el símbolo 'ε'."""
+    return expresion.replace('#', 'ε')
+
+
 def validar_expresion(expresion):
     """
     Verifica que la expresión regular tenga una estructura válida.
@@ -14,7 +19,7 @@ def validar_expresion(expresion):
     No agrega puntos ni convierte la expresión. Solamente detecta
     errores antes de ejecutar los demás algoritmos.
     """
-    expresion = expresion.replace(' ', '')
+    expresion = normalizar_epsilon(expresion).replace(' ', '')
 
     if not expresion:
         raise ValueError(
@@ -90,7 +95,7 @@ def puntos(expresion):
     resultado = []
     operadores = {'|', '.', '?', '*', '+'}
 
-    expresion = expresion.replace(' ', '')
+    expresion = normalizar_epsilon(expresion).replace(' ', '')
 
     for actual in expresion:
         if resultado:

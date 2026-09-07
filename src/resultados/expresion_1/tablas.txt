@@ -1,0 +1,27 @@
+TABLA DE TRANSICIONES DEL AFN-ε
+-> estado inicial, * estado de aceptación
+
++------------+------+
+| Estado AFN | ε    |
++------------+------+
+| ->q0       | {q1} |
+| *q1        | ∅    |
++------------+------+
+
+TABLA DE CONSTRUCCIÓN DEL AFD POR SUBCONJUNTOS
+Cada Estado AFD representa el conjunto de la columna Estado AFN.
+-> estado inicial, * estado de aceptación
+
++------------+------------+
+| Estado AFD | Estado AFN |
++------------+------------+
+| *->D0      | {q0, q1}   |
++------------+------------+
+
+VERIFICACIÓN DE PERTENENCIA
+r = #
+w = ε (cadena vacía)
+AFN: acepta
+AFD: acepta
+AFD mínimo: acepta
+Respuesta: w SÍ pertenece a L(r). El AFN y el AFD aceptan la cadena.

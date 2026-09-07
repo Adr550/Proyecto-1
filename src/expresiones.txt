@@ -2,3 +2,5 @@
 (b|b)*abb(a|b)*;babbaaaa
 a*;
 ab+c?;abbc
+a(b|c);ab
+a*bb;c
