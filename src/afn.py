@@ -1,5 +1,7 @@
 EPSILON = 'ε'
 
+from regex_parser import restaurar_literal
+
 OPERADORES = {'|', '.', '*', '+', '?'}
 
 
@@ -39,7 +41,7 @@ def thompson(posfija):
             inicio = nuevo_estado()
             fin = nuevo_estado()
 
-            agregar_transicion(inicio, elemento, fin)
+            agregar_transicion(inicio, restaurar_literal(elemento), fin)
 
             pila.append((inicio, fin))
 

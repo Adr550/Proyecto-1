@@ -6,10 +6,50 @@ precedencia = {
 unarios = {'?', '*', '+'}
 operadores = {'|', '.', '?', '*', '+'}
 
+# Los caracteres privados permiten que un operador escapado atraviese el
+# analizador como símbolo normal. Se restaura al construir el autómata.
+literales_escapados = {
+    caracter: chr(0xE000 + indice)
+    for indice, caracter in enumerate(r'(){}|.*+?\\')
+}
+literales_originales = {
+    codigo: caracter
+    for caracter, codigo in literales_escapados.items()
+}
+
 
 def normalizar_epsilon(expresion):
     """Permite escribir epsilon como '#' o como el símbolo 'ε'."""
     return expresion.replace('#', 'ε')
+
+
+def normalizar_expresion(expresion):
+    """Normaliza las formas alternativas admitidas por el programa."""
+    expresion = normalizar_epsilon(expresion).replace(' ', '')
+    resultado = []
+    posicion = 0
+
+    while posicion < len(expresion):
+        actual = expresion[posicion]
+
+        if actual == '\\':
+            if posicion + 1 >= len(expresion):
+                raise ValueError("La expresión termina con una barra invertida")
+
+            literal = expresion[posicion + 1]
+            resultado.append(literales_escapados.get(literal, literal))
+            posicion += 2
+            continue
+
+        resultado.append(actual)
+        posicion += 1
+
+    return ''.join(resultado)
+
+
+def restaurar_literal(simbolo):
+    """Devuelve el carácter representado por un literal escapado."""
+    return literales_originales.get(simbolo, simbolo)
 
 
 def validar_expresion(expresion):
@@ -19,7 +59,7 @@ def validar_expresion(expresion):
     No agrega puntos ni convierte la expresión. Solamente detecta
     errores antes de ejecutar los demás algoritmos.
     """
-    expresion = normalizar_epsilon(expresion).replace(' ', '')
+    expresion = normalizar_expresion(expresion)
 
     if not expresion:
         raise ValueError(
@@ -95,7 +135,7 @@ def puntos(expresion):
     resultado = []
     operadores = {'|', '.', '?', '*', '+'}
 
-    expresion = normalizar_epsilon(expresion).replace(' ', '')
+    expresion = normalizar_expresion(expresion)
 
     for actual in expresion:
         if resultado:

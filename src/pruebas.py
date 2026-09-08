@@ -129,6 +129,18 @@ probar(
 )
 
 
+probar(
+    r'if\((a|x|t)+\)\{y\}(else\{n\})?',
+    [
+        ('if(a){y}else{n}', True),
+        ('if(atx){y}', True),
+        ('if(){y}else{n}', False),
+        ('if(a){y}else{', False),
+        ('if(t){a}', False),
+    ]
+)
+
+
 expresiones_invalidas = [
     '',
     '(a|b',
